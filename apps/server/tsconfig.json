@@ -1,12 +1,6 @@
 {
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "lib": ["es2022"],
-    "module": "nodenext",
-    "target": "es2022",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "moduleResolution": "nodenext",
     "rootDir": "./src",
     "outDir": "./dist"
   },
