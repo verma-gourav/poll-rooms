@@ -18,7 +18,8 @@
   "dependencies": {
     "express": "^5.2.1",
     "@repo/typescript-config": "workspace:*",
-    "@repo/db": "workspace:*"
+    "@repo/db": "workspace:*",
+    "@repo/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

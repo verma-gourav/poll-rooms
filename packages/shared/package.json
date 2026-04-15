@@ -1,0 +1,14 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "exports": {
+    ".": "./src/types.ts"
+  }
+}
