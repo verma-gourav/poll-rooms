@@ -20,67 +20,113 @@ enum PollStatus {
 }
 
 model User {
-  id          String          @id @default(uuid())
-  email       String          @unique
-  name        String          
-  password    String
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
 
-  hostOf      Room[]
+  hostOf        Room[]
 
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt          
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
 
 model Room {
   id          String          @id @default(uuid())
   title       String               
   code        String          @unique
-  status      RoomStatus         @default(WAITING)
-
+  status      RoomStatus      @default(WAITING)
   host        User            @relation(fields: [hostId], references: [id])
   hostId      String
-
   pollOf      Poll[] 
-
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+
+  @@map("room")
 }
 
 model Poll {
   id          String          @id @default(uuid())
   question    String
   status      PollStatus      @default(DRAFT)
-
   room        Room            @relation(fields: [roomId], references: [id])
   roomId      String
-
   options     Option[] 
   votes       Vote[]
-
   createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt     
+  updatedAt   DateTime        @updatedAt
+
+  @@map("poll")     
 }
 
 model Option {
   id          String          @id @default(uuid())
   text        String
-
   poll        Poll            @relation(fields: [pollId], references: [id])
   pollId      String
-
   votes       Vote[]
+
+  @@map("option")
 }
 
 model Vote {
   id         String          @id @default(uuid())
-
   option      Option         @relation(fields: [optionId], references: [id])
   optionId    String         
-
   poll        Poll           @relation(fields: [pollId], references: [id])
   pollId      String
-
   participantId  String    
 
   @@unique([pollId, participantId])
+  @@map("vote")
 }
