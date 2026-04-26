@@ -1,6 +1,7 @@
 import roomService from "#/services/room.service.js";
 import { NextFunction, Request, Response } from "express";
 import { CreateRoomSchema } from "@repo/shared";
+import { AppError } from "#/utils/AppError.js";
 
 export const createRoom = async (
   req: Request,
@@ -10,14 +11,12 @@ export const createRoom = async (
   try {
     const validated = CreateRoomSchema.safeParse(req.body);
     if (!validated.success) {
-      res.status(400).json({ errors: validated.error.flatten() });
-      return;
+      throw new AppError("Invalid input data", 400, validated.error.flatten());
     }
 
-    const hostId = req.user?.id;
+    const hostId = req.user?.id as string;
     if (!hostId) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
+      throw new AppError("Unauthorized", 401);
     }
 
     const room = await roomService.create(validated.data.title, hostId);
@@ -36,15 +35,10 @@ export const getRoomByCode = async (
   try {
     const code = req.params.code as string;
     if (!code) {
-      res.status(400).json({ message: "Code missing" });
-      return;
+      throw new AppError("Code missing", 400);
     }
 
     const room = await roomService.getByCode(code);
-    if (!room) {
-      res.status(404).json({ message: "Room not found" });
-      return;
-    }
 
     res.status(200).json(room);
   } catch (err) {
@@ -60,15 +54,10 @@ export const getRoomById = async (
   try {
     const id = req.params.id as string;
     if (!id) {
-      res.status(400).json({ message: "Id missing" });
-      return;
+      throw new AppError("Id missing", 400);
     }
 
     const room = await roomService.getById(id);
-    if (!room) {
-      res.status(404).json({ message: "Room not found" });
-      return;
-    }
 
     res.status(200).json(room);
   } catch (err) {

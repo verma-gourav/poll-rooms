@@ -14,6 +14,7 @@ export const globalErrorHandler = (
   res.status(status).json({
     success: false,
     message,
+    errors: err.errors || undefined,
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 };
